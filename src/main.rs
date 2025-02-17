@@ -1,34 +1,5 @@
-mod balances;
-mod system;
-mod types;
-
-impl system::Config for Runtime {
-    type AccountId = types::AccountId;
-    type BlockNumber = types::BlockNumber;
-    type Nonce = types::Nonce;
-}
-
-impl balances::Config for Runtime {
-    type AccountId = types::AccountId;
-    type Balance = types::Balance;
-}
-#[derive(Debug)]
-pub struct Runtime {
-    system: system::Pallet<Runtime>,
-    balances: balances::Pallet<Runtime>,
-}
-
-impl Runtime {
-    pub fn new() -> Self {
-        Self {
-            system: system::Pallet::new(),
-            balances: balances::Pallet::new(),
-        }
-    }
-}
-
 fn main() {
-    let mut runtime = Runtime::new();
+    let mut runtime = rsm::Runtime::new();
 
     let userA = String::from("A");
     let userB = String::from("B");
