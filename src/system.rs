@@ -33,7 +33,7 @@ impl<T: Config> Pallet<T> {
             .unwrap();
     }
 
-    pub fn inc_nonce(&mut self, to: T::AccountId) {
+    pub fn inc_nonce(&mut self, to: &T::AccountId) {
         let nonce = *self.nonce.get(&to).unwrap_or(&T::Nonce::zero());
         self.nonce.insert(to.clone(), nonce + T::Nonce::one());
     }
@@ -72,7 +72,7 @@ mod test {
     fn inc_nonce() {
         let mut system: Pallet<TestConfig> = Pallet::new();
         let user = String::from("A");
-        system.inc_nonce(user.clone());
+        system.inc_nonce(&user);
         assert_eq!(system.get_nonce(&user), 1);
     }
 }

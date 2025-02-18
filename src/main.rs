@@ -10,7 +10,7 @@ fn main() {
 
     assert_eq!(runtime.system.block_number(), 1);
 
-    runtime.system.inc_nonce(userA.clone());
+    runtime.system.inc_nonce(&userA);
 
     let _ = runtime
         .balances
