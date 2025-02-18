@@ -54,7 +54,16 @@ impl support::Dispatch for Runtime {
     type Caller = <Runtime as system::Config>::AccountId;
     type Call = types::RuntimeCall;
 
-    fn dispatch(&mut self, caller: Self::Caller, call: Self::Call) -> support::DispatchResult {
-        unimplemented!()
+    fn dispatch(
+        &mut self,
+        caller: Self::Caller,
+        runtime_call: Self::Call,
+    ) -> support::DispatchResult {
+        match runtime_call {
+            types::RuntimeCall::Transfer { to, amount } => {
+                self.balances.transfer(caller, to, amount)?;
+            }
+        }
+        Ok(())
     }
 }

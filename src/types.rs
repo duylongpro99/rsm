@@ -9,4 +9,6 @@ pub type Extrinsic = support::Extrinsic<AccountId, RuntimeCall>;
 pub type Header = support::Header<BlockNumber>;
 pub type Block = support::Block<Header, Extrinsic>;
 
-pub enum RuntimeCall {}
+pub enum RuntimeCall {
+    Transfer { to: AccountId, amount: Balance },
+}
