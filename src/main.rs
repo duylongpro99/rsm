@@ -1,26 +1,25 @@
+use support::Runtime;
+use types::RuntimeCall;
+
+mod balances;
+mod support;
+mod system;
+mod types;
+
 fn main() {
-    let mut runtime = rsm::Runtime::new();
+    let a = String::from("A");
+    let mut runtime = Runtime::new();
+    runtime.balances.set_balance(&a, 100);
+    let block = support::Block {
+        header: support::Header { block_number: 1 },
+        extrinsics: vec![support::Extrinsic {
+            caller: a.clone(),
+            call: RuntimeCall::Balances(balances::Call::Transfer {
+                to: String::from("B"),
+                amount: 50,
+            }),
+        }],
+    };
 
-    let userA = String::from("A");
-    let userB = String::from("B");
-    let userC = String::from("C");
-
-    runtime.balances.set_balance(&userA, 100);
-    runtime.system.inc_block_number();
-
-    assert_eq!(runtime.system.block_number(), 1);
-
-    runtime.system.inc_nonce(&userA);
-
-    let _ = runtime
-        .balances
-        .transfer(userA.clone(), userB.clone(), 30)
-        .map_err(|e| println!("Error: {}", e));
-
-    let _ = runtime
-        .balances
-        .transfer(userA.clone(), userC.clone(), 20)
-        .map_err(|e| println!("Error: {}", e));
-
-    println!("{:#?}", runtime);
+    runtime.execute_block(block).expect("Cannot execute block");
 }
