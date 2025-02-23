@@ -5,6 +5,7 @@ mod balances;
 mod support;
 mod system;
 mod types;
+mod proof_of_existence;
 
 fn main() {
     let a = String::from("A");
