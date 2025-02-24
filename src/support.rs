@@ -1,4 +1,4 @@
-use crate::{balances, system, types};
+use crate::{balances, proof_of_existence, system, types};
 
 pub struct Header<BlockNumber> {
     pub block_number: BlockNumber,
@@ -33,10 +33,15 @@ impl balances::Config for Runtime {
     type Balance = types::Balance;
 }
 
+impl proof_of_existence::Config for Runtime {
+    type Content = types::Content;
+}
+
 #[derive(Debug)]
 pub struct Runtime {
     pub system: system::Pallet<Runtime>,
     pub balances: balances::Pallet<Runtime>,
+    pub proof_of_existence: proof_of_existence::Pallet<Runtime>,
 }
 
 impl Runtime {
@@ -44,6 +49,7 @@ impl Runtime {
         Self {
             system: system::Pallet::new(),
             balances: balances::Pallet::new(),
+            proof_of_existence: proof_of_existence::Pallet::new(),
         }
     }
 
@@ -76,6 +82,9 @@ impl Dispatch for Runtime {
         match runtime_call {
             types::RuntimeCall::Balances(call) => {
                 self.balances.dispatch(caller, call)?;
+            }
+            types::RuntimeCall::ProofOfExistence(call) => {
+                self.proof_of_existence.dispatch(caller, call)?;
             }
         }
         Ok(())
