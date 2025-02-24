@@ -35,7 +35,7 @@ fn main() {
     runtime.execute_block(block).expect("Cannot execute block");
 
     let block1 = support::Block {
-        header: support::Header { block_number: 1 },
+        header: support::Header { block_number: 2 },
         extrinsics: vec![
             support::Extrinsic {
                 caller: a.clone(),
