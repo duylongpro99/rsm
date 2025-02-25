@@ -1,9 +1,4 @@
-use crate::{balances, proof_of_existence, support, Runtime};
-
-pub enum RuntimeCall {
-    Balances(balances::Call<Runtime>),
-    ProofOfExistence(proof_of_existence::Call<Runtime>),
-}
+use crate::{support, RuntimeCall};
 
 pub type AccountId = String;
 pub type Balance = u128;

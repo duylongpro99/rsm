@@ -1,11 +1,32 @@
-use support::Runtime;
-use types::RuntimeCall;
-
 mod balances;
 mod proof_of_existence;
 mod support;
 mod system;
 mod types;
+
+use support::Dispatch;
+
+#[derive(Debug)]
+#[macros::runtime]
+pub struct Runtime {
+    pub system: system::Pallet<Runtime>,
+    pub balances: balances::Pallet<Runtime>,
+    pub proof_of_existence: proof_of_existence::Pallet<Runtime>,
+}
+
+impl system::Config for Runtime {
+    type AccountId = types::AccountId;
+    type BlockNumber = types::BlockNumber;
+    type Nonce = types::Nonce;
+}
+
+impl balances::Config for Runtime {
+    type Balance = types::Balance;
+}
+
+impl proof_of_existence::Config for Runtime {
+    type Content = types::Content;
+}
 
 fn main() {
     let a: String = String::from("A");
@@ -17,14 +38,14 @@ fn main() {
         extrinsics: vec![
             support::Extrinsic {
                 caller: a.clone(),
-                call: RuntimeCall::Balances(balances::Call::Transfer {
+                call: RuntimeCall::balances(balances::Call::transfer {
                     to: String::from("B"),
                     amount: 50,
                 }),
             },
             support::Extrinsic {
                 caller: b.clone(),
-                call: RuntimeCall::Balances(balances::Call::Transfer {
+                call: RuntimeCall::balances(balances::Call::transfer {
                     to: String::from("B"),
                     amount: 50,
                 }),
@@ -39,13 +60,13 @@ fn main() {
         extrinsics: vec![
             support::Extrinsic {
                 caller: a.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim {
+                call: RuntimeCall::proof_of_existence(proof_of_existence::Call::create_claim {
                     claim: "transactionA",
                 }),
             },
             support::Extrinsic {
                 caller: b.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim {
+                call: RuntimeCall::proof_of_existence(proof_of_existence::Call::create_claim {
                     claim: "transactionB",
                 }),
             },

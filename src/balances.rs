@@ -13,6 +13,34 @@ pub struct Pallet<T: Config> {
     balances: BTreeMap<T::AccountId, T::Balance>,
 }
 
+#[macros::call]
+impl<T: Config> Pallet<T> {
+    pub fn transfer(
+        &mut self,
+        caller: T::AccountId,
+        to: T::AccountId,
+        amount: T::Balance,
+    ) -> Result<(), &'static str> {
+        let from_amount = self.balance(&caller);
+        let to_amount = self.balance(&to);
+
+        println!("from amount {:#?}", from_amount);
+
+        let new_from_amount = (from_amount)
+            .checked_sub(&amount)
+            .ok_or("Insufficient fund")?;
+
+        let new_to_amount = (to_amount)
+            .checked_add(&amount)
+            .ok_or("Overflow when adding to balance")?;
+
+        self.set_balance(&caller, new_from_amount);
+        self.set_balance(&to, new_to_amount);
+
+        Ok(())
+    }
+}
+
 impl<T: Config> Pallet<T> {
     pub fn new() -> Self {
         Pallet {
@@ -26,57 +54,6 @@ impl<T: Config> Pallet<T> {
 
     pub fn balance(&mut self, account: &T::AccountId) -> T::Balance {
         *self.balances.get(account).unwrap_or(&T::Balance::zero())
-    }
-
-    pub fn transfer(
-        &mut self,
-        from: T::AccountId,
-        to: T::AccountId,
-        amount: T::Balance,
-    ) -> Result<(), &'static str> {
-        let from_amount = self.balance(&from);
-        let to_amount = self.balance(&to);
-
-        println!("from amount {:#?}", from_amount);
-
-        let new_from_amount = (from_amount)
-            .checked_sub(&amount)
-            .ok_or("Insufficient fund")?;
-
-        let new_to_amount = (to_amount)
-            .checked_add(&amount)
-            .ok_or("Overflow when adding to balance")?;
-
-        self.set_balance(&from, new_from_amount);
-        self.set_balance(&to, new_to_amount);
-
-        Ok(())
-    }
-}
-
-pub enum Call<T: Config> {
-    Transfer {
-        to: T::AccountId,
-        amount: T::Balance,
-    },
-}
-
-impl<T: Config> crate::support::Dispatch for Pallet<T> {
-    type Caller = T::AccountId;
-    type Call = Call<T>;
-
-    fn dispatch(
-        &mut self,
-        caller: Self::Caller,
-        call: Self::Call,
-    ) -> crate::support::DispatchResult {
-        match call {
-            Call::Transfer { to, amount } => {
-                self.transfer(caller, to, amount)?;
-            }
-        }
-
-        Ok(())
     }
 }
 
